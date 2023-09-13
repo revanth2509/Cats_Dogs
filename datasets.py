@@ -1,7 +1,7 @@
 import torchvision
 from torchvision import transforms
 from torchvision.datasets import ImageFolder
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 import torch
 
 class CustomeTransform():
@@ -19,6 +19,8 @@ class CustomeTransform():
 
     def loader(self,path):
         load = ImageFolder(path, transform=self.t1)
-        train_data = DataLoader(load,batch_size=self.batch_size,shuffle=True)
-        return train_data
+        train,valid = random_split(load,[7,3])
+        train_data = DataLoader(train,batch_size=self.batch_size,shuffle=True)
+        valid_data = DataLoader(valid,batch_size=self.batch_size,shuffle=True)
+        return train_data, valid_data
        

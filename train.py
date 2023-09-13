@@ -6,6 +6,7 @@ from pathlib import Path
 import os
 import argparse
 from model import CNNModel
+from datasets import CustomeTransform
 
 argument = argparse.ArgumentParser(description="Train data from path")
 argument.add_argument("path",type=Path,help="A path to training dataset")
@@ -16,24 +17,8 @@ p = argument.parse_args()
 
 path = p.path
 
-dogs = list(Path(path).glob("dogs/*"))
-cats = list(Path(path).glob("cats/*"))
-
-
-transform = torchvision.transforms.Compose([
-    torchvision.transforms.RandomHorizontalFlip(),
-    torchvision.transforms.RandomRotation(10),
-    torchvision.transforms.Resize(500),
-    torchvision.transforms.CenterCrop(500),
-    torchvision.transforms.ToTensor(),
-    torchvision.transforms.Normalize([0.485, 0.456, 0.406],
-                          [0.229, 0.224, 0.225])
-])
-
-batch_size=p.b
-
-model_data = torchvision.datasets.ImageFolder(path,transform=transform)
-train_data = DataLoader(model_data,batch_size,shuffle=True)
+transform = CustomeTransform(batch_size=128)
+train_data = transform.loader(path=path)
 
 
 model = CNNModel(3)
